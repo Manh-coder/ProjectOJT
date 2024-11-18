@@ -5,6 +5,15 @@
 @section('content')
     <div class="form-container">
         <h2 class="mb-4">Edit Salary Level</h2>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <form action="{{ route('salary-levels.update', $entry->id) }}" method="POST">
             @csrf
             @method('PUT')

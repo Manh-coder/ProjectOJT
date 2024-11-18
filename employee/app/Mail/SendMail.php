@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -13,41 +12,41 @@ class SendMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject;
     public $messageContent;
+    public $employeeName;
 
     /**
-     * Create a new message instance.
+     * Tạo một instance mới của email.
      */
-    public function __construct($messageContent)
+    public function __construct($subject, $messageContent, $employeeName)
     {
+        $this->subject = $subject;
         $this->messageContent = $messageContent;
+        $this->employeeName = $employeeName;
     }
 
     /**
-     * Get the message envelope.
+     * Định nghĩa envelope cho email.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reminder Notification',
+            subject: $this->subject,
         );
     }
 
     /**
-     * Get the message content definition.
+     * Định nghĩa nội dung email với Markdown.
      */
     public function content(): Content
     {
         return new Content(
-            htmlString: $this->messageContent
+            markdown: 'emails.employee_notification',
+            with: [
+                'name' => $this->employeeName,
+                'content' => $this->messageContent,
+            ]
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

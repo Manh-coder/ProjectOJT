@@ -25,18 +25,27 @@ class SalaryLevelController extends Controller
         return view('salary.create');
     }
 
-    // Lưu nhân viên mới
+    // Lưu bac luong mới
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'level'   => 'required',
-            'monthly' => 'required',
-            'daily'   => 'required',
-        ]);
+{
+    $data = $request->validate([
+        'level'   => 'required',
+        'monthly' => 'required|numeric',
+        'daily'   => 'required|numeric',
+    ], [
+        'monthly.numeric' => 'Lương tháng phải là một số.',
+        'daily.numeric'   => 'Lương ngày phải là một số.',
+    ]);
 
-        SalaryLevel::create($data);
-        return redirect()->route('salary-levels.index')->with('success', 'New salary created successfully.');
+    // Kiểm tra nếu lương ngày lớn hơn lương tháng
+    if ($data['daily'] > $data['monthly']) {
+        return back()->withErrors(['daily' => 'Daily salary cannot be greater than monthly salary.']);
     }
+
+    SalaryLevel::create($data);
+    return redirect()->route('salary-levels.index')->with('success', 'New salary created successfully.');
+}
+
 
 
 
@@ -48,20 +57,30 @@ class SalaryLevelController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $employee = SalaryLevel::findOrFail($id);
+{
+    $employee = SalaryLevel::findOrFail($id);
 
-        $valid = $request->validate([
-            'level'   => 'required',
-            'monthly' => 'required',
-            'daily'   => 'required',
-        ]);
+    // Validate input fields
+    $valid = $request->validate([
+        'level'   => 'required',
+        'monthly' => 'required|numeric',
+        'daily'   => 'required|numeric',
+    ], [
+        'monthly.numeric' => 'Lương tháng phải là một số.',
+        'daily.numeric'   => 'Lương ngày phải là một số.',
+    ]);
 
-        // Cập nhật thông tin updated_by
-
-        $employee->update($valid);
-        return redirect()->route('salary-levels.index')->with('success', 'Employee updated successfully.');
+    // Kiểm tra lương ngày không được lớn hơn lương tháng và ngược lại
+    if ($valid['daily'] > $valid['monthly']) {
+        return back()->withErrors(['daily' => 'Daily salary cannot be greater than monthly salary.']);
     }
+
+    // Cập nhật thông tin
+    $employee->update($valid);
+
+    return redirect()->route('salary-levels.index')->with('success', 'Salary updated successfully.');
+}
+
 
 
 
@@ -72,14 +91,14 @@ class SalaryLevelController extends Controller
             $employee = SalaryLevel::findOrFail($id);
             $employee->delete();
 
-            return redirect()->route('salary-levels.index')->with('success', 'Employee deleted successfully.');
+            return redirect()->route('salary-levels.index')->with('success', 'Salary deleted successfully.');
         } catch (\Illuminate\Database\QueryException $e) {
             // Kiểm tra nếu lỗi liên quan đến khóa ngoại
             if ($e->getCode() == 23000) {
-                return back()->with('error', 'Cannot delete employee because there are related attendance records.');
+                return back()->with('error', 'Cannot delete Salary because there are related attendance records.');
             }
             // Xử lý các ngoại lệ khác (nếu có)
-            return back()->with('error', 'An error occurred while deleting the employee.');
+            return back()->with('error', 'An error occurred while deleting the Salary.');
         }
     }
 

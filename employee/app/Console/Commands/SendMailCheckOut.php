@@ -9,31 +9,22 @@ use Illuminate\Support\Facades\Mail;
 
 class SendMailCheckOut extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:send-mail-check-out';
+    protected $description = 'Send reminder emails for employees to check out';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Send email reminders to employees to checkout at the end of the day';
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        $entries = User::typeEmployee()->get();
+        $employees = User::typeEmployee()->get();
 
-        foreach ($entries as $entry) {
-            // Gửi email nhắc nhở checkout
-            Mail::to($entry->email)->send(new SendMail('Please Checkout'));
-            sleep(1); // Tạm dừng 1 giây giữa các email
+        foreach ($employees as $employee) {
+            $subject = 'Check-out Reminder';
+            $content = 'Please check out at 5:00 PM to end your work day!';
+            $name = $employee->name;
+
+            Mail::to($employee->email)->send(new SendMail($subject, $content, $name));
+            sleep(1); // Pause for 1 second between emails
         }
+
+        $this->info('Check-out reminder emails have been successfully sent!');
     }
 }

@@ -104,6 +104,13 @@
         .forgot-password a:hover {
             text-decoration: underline;
         }
+
+        .text-error {
+    color: red;
+    font-size: 0.875rem;  /* Kích thước font chữ nhỏ */
+    margin-top: 0.25rem;   /* Khoảng cách giữa lỗi và input */
+    display: block;        /* Đảm bảo lỗi hiển thị trên dòng mới */
+}
     </style>
 </head>
 <body>

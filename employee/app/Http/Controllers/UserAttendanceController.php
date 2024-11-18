@@ -22,39 +22,6 @@ class UserAttendanceController extends Controller
 
     public function index()
     {
-        // Lấy bản ghi chấm công cuối cùng của mỗi nhân viên với phân trang
-        // $attendances = UserAttendance::with('user')
-        //     ->select('user_attendance.*')
-        //     ->join(
-        //         DB::raw('(SELECT user_id, MAX(time) as max_time FROM user_attendance GROUP BY user_id) as latest_attendance'),
-        //         function ($join) {
-        //             $join->on('user_attendance.user_id', '=', 'latest_attendance.user_id')
-        //                 ->on('user_attendance.time', '=', 'latest_attendance.max_time');
-        //         }
-        //     )
-        //     ->paginate(10); // Sử dụng phân trang
-
-        // Tính toán `total_duration` cho mỗi bản ghi
-        // foreach ($attendances as $attendance) {
-        //     $firstCheckIn = UserAttendance::where('user_id', $attendance->user_id)
-        //         ->where('type', 'in')
-        //         ->orderBy('time', 'asc')
-        //         ->first();
-
-        //     $lastCheckOut = UserAttendance::where('user_id', $attendance->user_id)
-        //         ->where('type', 'out')
-        //         ->orderBy('time', 'desc')
-        //         ->first();
-
-        //     if ($firstCheckIn && $lastCheckOut) {
-        //         $firstCheckInTime           = Carbon::parse($firstCheckIn->time);
-        //         $lastCheckOutTime           = Carbon::parse($lastCheckOut->time);
-        //         $attendance->total_duration = $lastCheckOutTime->diffInHours($firstCheckInTime) . ' hours';
-        //     } else {
-        //         $attendance->total_duration = 'N/A';
-        //     }
-        // }
-        // 
         $attendances = UserAttendance::from(
             function ($query) {
                 $query

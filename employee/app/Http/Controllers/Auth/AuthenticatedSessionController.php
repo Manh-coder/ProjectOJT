@@ -42,7 +42,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return back()->withErrors([
-            'username' => 'Tài khoản hoặc mật khẩu không đúng.',
+            'username' => 'Username or password invaild.',
         ])->onlyInput('username');
     }
 

@@ -159,8 +159,8 @@
                             @php
                                 $firstCheckInTime = \Carbon\Carbon::parse($attendance->datetime_ci);
                                 $lastCheckOutTime = \Carbon\Carbon::parse($attendance->datetime_co);
-                                $total = $lastCheckOutTime->diff($firstCheckInTime);
-                                $hour = $total->format('%H');
+                                $total = $lastCheckOutTime->diffInMinutes($firstCheckInTime);
+                                $hour = round($total/60,2);
                             @endphp
                             {{ $hour }} hours
                         @else

@@ -25,11 +25,14 @@ class DashboardController extends Controller
 
         return view('dashboard', compact('employeeCount', 'departmentCount', 'recentEmployees', 'activeDepartments'));
     }
+
+
     public function indexGuest()
     {
 
         $entry   = UserAttendance::where('user_id', auth()->id())->where('date', date('Y-m-d'))->first();
         $entries = UserAttendance::where('user_id', auth()->id())->get();
+        $entries = UserAttendance::paginate(2);
         return view('guest.dashboard', compact('entry', 'entries'));
     }
 }

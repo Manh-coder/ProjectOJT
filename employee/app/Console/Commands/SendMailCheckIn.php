@@ -9,29 +9,22 @@ use Illuminate\Support\Facades\Mail;
 
 class SendMailCheckIn extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:send-mail-check-in';
+    protected $description = 'Send reminder emails for employees to check-in';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        $entries = User::typeEmployee()->get();
-        foreach ($entries as $entry) {
-            Mail::to($entry->email)->send(new SendMail('Please Checkin'));
-            sleep(1);
+        $employees = User::typeEmployee()->get();
+
+        foreach ($employees as $employee) {
+            $subject = 'Check-in Reminder';
+            $content = 'Please check in at 7:00 AM to start your work day!';
+            $name = $employee->name;
+
+            Mail::to($employee->email)->send(new SendMail($subject, $content, $name));
+            sleep(1); // Pause for 1 second between emails
         }
+
+        $this->info('Check-in reminder emails have been successfully sent!');
     }
 }

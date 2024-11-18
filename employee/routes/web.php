@@ -54,6 +54,14 @@ Route::middleware('auth')->group(function () {
         // Route::get('/user_attendance', [UserAttendanceController::class, 'search'])->name('user_attendance.index');
         // Route::get('/user_attendance/search', [UserAttendanceController::class, 'search'])->name('user-attendance.search');
         // Route::get('user-attendance/{userId}/details', [UserAttendanceController::class, 'show'])->name('user-attendance.details');
+// Route xác nhận giải trình cho admin
+Route::post('/admin/attendance/{id}/confirm-explanation', [EmployeeController::class, 'confirmExplanation'])
+    ->name('admin.attendance.confirmExplanation');
+
+    Route::post('/admin/attendance/{id}/reject-explanation', [EmployeeController::class, 'rejectExplanation'])
+    ->name('admin.attendance.reject');
+
+
 
         Route::post('employees/import', [EmployeeController::class, 'import'])->name('employees.import');
         //Route::get('employees/export-phpspreadsheet', [EmployeeController::class, 'exportWithPhpSpreadsheet'])->name('employees.export-phpspreadsheet');
@@ -62,6 +70,7 @@ Route::middleware('auth')->group(function () {
 
     });
     Route::post('employees-action', [EmployeeController::class, 'action'])->name('employees.action');
+    Route::post('/employees/{attendanceId}/submit-explanation', [EmployeeController::class, 'submitExplanation'])->name('employees.submitExplanation');
     // Các route liên quan đến profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
