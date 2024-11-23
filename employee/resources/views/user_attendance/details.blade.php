@@ -3,6 +3,10 @@
 @section('title', 'Details User Attendance')
 
 <style>
+    .btn-info {
+    font-size: 0.875rem; /* Giảm kích thước font của nút "View Details" */
+    padding: 0.25rem 0.75rem; /* Điều chỉnh padding nếu cần */
+}
     .attendance-card {
         background-color: #fff;
         border-radius: 10px;
@@ -61,6 +65,57 @@
         background-color: #218838; /* Màu xanh đậm */
     }
 
+    .btn-reject {
+        background-color: #dc3545; /* Màu đỏ */
+        color: #fff;
+        padding: 0.3rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-reject:hover {
+        background-color: #c82333; /* Màu đỏ đậm */
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 
 @section('content')
@@ -76,8 +131,7 @@
                 <th>Check out time</th>
                 <th>Time of work</th>
                 <th>Status</th>
-                <th>Explanation</th>
-                <th>Action</th> <!-- Thêm cột Action cho nút xác nhận -->
+                <th>Detail</th> <!-- Cột Detail thay thế Explanation và Actions -->
             </tr>
         </thead>
         <tbody>
@@ -114,31 +168,11 @@
                     </td>
 
                     <td>
-                        @if ($attendance->explanation)
-                            <span>{{ $attendance->explanation }}</span>
-                        @else
-                            <span>-</span>
-                        @endif
-                    </td>
-
-                    <td>
                         @if ($attendance->status == 'pending')
-                            <!-- Nút xác nhận giải trình cho admin -->
-                            <form action="{{ route('admin.attendance.confirmExplanation', $attendance->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn-confirm">Confirm</button>
-                            </form>
-                        @else
-                            <span>-</span>
-                        @endif
-
-
-                        @if ($attendance->status == 'pending')
-                            <!-- Nút xác nhận giải trình cho admin -->
-                            <form action="{{ route('admin.attendance.reject', $attendance->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn-confirm">Reject</button>
-                            </form>
+                            <!-- Nút View Details để mở modal -->
+                            <button class="btn btn-info btn-sm" onclick="showModal('{{ $attendance->explanation }}', '{{ route('admin.attendance.confirmExplanation', $attendance->id) }}', '{{ route('admin.attendance.reject', $attendance->id) }}')">
+                                View Details
+                            </button>
                         @else
                             <span>-</span>
                         @endif
@@ -150,5 +184,50 @@
 
     <a href="{{ route('user-attendance.index') }}" class="btn">Back to User Attendance List</a>
 </div>
+
+<!-- Modal -->
+<div id="attendanceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Attendance Explanation</h3>
+        <p><strong>Explanation:</strong> <span id="attendanceExplanation"></span></p>
+
+        <form id="confirmForm" action="" method="POST">
+            @csrf
+            <button type="submit" class="btn-confirm">Confirm</button>
+        </form>
+
+        <form id="rejectForm" action="" method="POST">
+            @csrf
+            <button type="submit" class="btn-reject">Reject</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showModal(explanation, confirmUrl, rejectUrl) {
+        // Hiển thị modal
+        document.getElementById('attendanceModal').style.display = 'block';
+        
+        // Hiển thị giải thích
+        document.getElementById('attendanceExplanation').innerText = explanation;
+        
+        // Cập nhật đường dẫn cho các form Confirm và Reject
+        document.getElementById('confirmForm').action = confirmUrl;
+        document.getElementById('rejectForm').action = rejectUrl;
+    }
+
+    function closeModal() {
+        // Đóng modal
+        document.getElementById('attendanceModal').style.display = 'none';
+    }
+
+    // Khi click ra ngoài modal, đóng modal
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('attendanceModal')) {
+            closeModal();
+        }
+    }
+</script>
 
 @endsection

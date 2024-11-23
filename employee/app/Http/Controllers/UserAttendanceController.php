@@ -187,10 +187,6 @@ class UserAttendanceController extends Controller
     {
         // Tìm thời gian Check In đầu tiên
         $entries = UserAttendance::where('user_id', $userId)->get();
-
-
-
-
         return view('user_attendance.details', compact('entries'));
     }
 

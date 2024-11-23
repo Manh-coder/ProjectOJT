@@ -40,26 +40,16 @@ Route::middleware('auth')->group(function () {
         // Employee routes
         Route::resource('salary-levels', SalaryLevelController::class);
         Route::resource('employees', EmployeeController::class);
-        // Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
-        // // Route::get('/employees/search', [EmployeeController::class, 'search'])->name('employees.search');
-        // Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employees.show');
-        // Department routes
+        
         Route::resource('departments', DepartmentController::class);
-        // Route::get('/departments', [DepartmentController::class, 'search'])->name('departments.index');
-        // Route::get('/departments/search', [DepartmentController::class, 'search'])->name('departments.search');
-        // Route::get('departments/{id}/details', [DepartmentController::class, 'show'])->name('departments.details');
-
-        // User Attendance routes
+        
         Route::resource('user-attendance', UserAttendanceController::class);
-        // Route::get('/user_attendance', [UserAttendanceController::class, 'search'])->name('user_attendance.index');
-        // Route::get('/user_attendance/search', [UserAttendanceController::class, 'search'])->name('user-attendance.search');
-        // Route::get('user-attendance/{userId}/details', [UserAttendanceController::class, 'show'])->name('user-attendance.details');
-// Route xác nhận giải trình cho admin
-Route::post('/admin/attendance/{id}/confirm-explanation', [EmployeeController::class, 'confirmExplanation'])
-    ->name('admin.attendance.confirmExplanation');
+        
+        Route::post('/admin/attendance/{id}/confirm-explanation', [EmployeeController::class, 'confirmExplanation'])
+        ->name('admin.attendance.confirmExplanation');
 
-    Route::post('/admin/attendance/{id}/reject-explanation', [EmployeeController::class, 'rejectExplanation'])
-    ->name('admin.attendance.reject');
+        Route::post('/admin/attendance/{id}/reject-explanation', [EmployeeController::class, 'rejectExplanation'])
+        ->name('admin.attendance.reject');
 
 
 
@@ -69,12 +59,12 @@ Route::post('/admin/attendance/{id}/confirm-explanation', [EmployeeController::c
         Route::post('employees-change-password/{id}', [EmployeeController::class, 'changePassword'])->name('employees.change.password');
 
     });
-    Route::post('employees-action', [EmployeeController::class, 'action'])->name('employees.action');
-    Route::post('/employees/{attendanceId}/submit-explanation', [EmployeeController::class, 'submitExplanation'])->name('employees.submitExplanation');
+        Route::post('employees-action', [EmployeeController::class, 'action'])->name('employees.action');
+        Route::post('/employees/{attendanceId}/submit-explanation', [EmployeeController::class, 'submitExplanation'])->name('employees.submitExplanation');
     // Các route liên quan đến profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
 

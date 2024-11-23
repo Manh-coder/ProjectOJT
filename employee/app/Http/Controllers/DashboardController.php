@@ -28,11 +28,19 @@ class DashboardController extends Controller
 
 
     public function indexGuest()
-    {
+{
+    // Lấy thông tin chấm công của người dùng hôm nay
+    $entry = UserAttendance::where('user_id', auth()->id())
+        ->where('date', date('Y-m-d'))
+        ->first();
 
-        $entry   = UserAttendance::where('user_id', auth()->id())->where('date', date('Y-m-d'))->first();
-        $entries = UserAttendance::where('user_id', auth()->id())->get();
-        $entries = UserAttendance::paginate(2);
-        return view('guest.dashboard', compact('entry', 'entries'));
-    }
+    // Lấy tất cả dữ liệu chấm công của người dùng, sắp xếp theo ngày từ mới nhất đến cũ nhất và phân trang
+    $entries = UserAttendance::where('user_id', auth()->id())
+        ->orderBy('date', 'desc')  // Sắp xếp theo ngày mới nhất
+        ->paginate(2);  // Phân trang 2 bản ghi mỗi trang
+
+    // Trả về view với dữ liệu
+    return view('guest.dashboard', compact('entry', 'entries'));
+}
+
 }
