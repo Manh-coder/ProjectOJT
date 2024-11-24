@@ -18,7 +18,7 @@ class SendMailCheckOut extends Command
 
         foreach ($employees as $employee) {
             $subject = 'Check-out Reminder';
-            $content = 'Please check out at 5:00 PM to end your work day!';
+            $content = 'Please check out to end your work day!';
             $name = $employee->name;
 
             Mail::to($employee->email)->send(new SendMail($subject, $content, $name));

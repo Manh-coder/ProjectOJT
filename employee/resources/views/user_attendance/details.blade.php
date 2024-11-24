@@ -3,10 +3,7 @@
 @section('title', 'Details User Attendance')
 
 <style>
-    .btn-info {
-    font-size: 0.875rem; /* Giảm kích thước font của nút "View Details" */
-    padding: 0.25rem 0.75rem; /* Điều chỉnh padding nếu cần */
-}
+    
     .attendance-card {
         background-color: #fff;
         border-radius: 10px;
@@ -189,8 +186,8 @@
 <div id="attendanceModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <h3>Attendance Explanation</h3>
-        <p><strong>Explanation:</strong> <span id="attendanceExplanation"></span></p>
+        
+        <p><strong>Explanation:</strong> <span id="attendanceExplanation"></span></p><br>
 
         <form id="confirmForm" action="" method="POST">
             @csrf

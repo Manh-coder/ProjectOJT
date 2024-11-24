@@ -16,7 +16,9 @@ class UserAttendance extends Model
     protected $guarded = ['id',
     'explanation',
     'status',
-    'is_confirmed'
+    'is_confirmed',
+    
+
             ];
 
     

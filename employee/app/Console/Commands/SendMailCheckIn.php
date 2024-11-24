@@ -18,7 +18,7 @@ class SendMailCheckIn extends Command
 
         foreach ($employees as $employee) {
             $subject = 'Check-in Reminder';
-            $content = 'Please check in at 7:00 AM to start your work day!';
+            $content = 'Please check in to start your work day!';
             $name = $employee->name;
 
             Mail::to($employee->email)->send(new SendMail($subject, $content, $name));

@@ -25,7 +25,21 @@
                         <x-nav-link :href="route('salary-levels.index')" :active="request()->routeIs('salary-levels.*')">
                             {{ __('Salary level') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.email-schedule')" :active="request()->routeIs('salary.*')">
+                            {{ __('Salary Management') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.email-schedule')" :active="request()->routeIs('admin.*')">
+                            {{ __('Time Controller') }}
+                        </x-nav-link>
                     @endif
+
+                    @if (auth()->user()->type == 2)
+                        <x-nav-link :href="route('guest.notification_schedule')" :active="request()->routeIs('guest.')">
+                            {{ __('Time Controller') }}
+                        </x-nav-link>
+                        
+                    @endif
+
                 </div>
             </div>
             <div class="hidden sm:flex sm:items-center sm:ms-6">

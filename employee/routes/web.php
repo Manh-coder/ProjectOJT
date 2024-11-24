@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EmailScheduleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SalaryLevelController;
 use App\Http\Middleware\CheckAdmin;
 use App\Mail\SendMail;
+use App\Http\Controllers\NotificationScheduleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +61,16 @@ Route::middleware('auth')->group(function () {
         Route::get('employees-export', [EmployeeController::class, 'exportWithPhpSpreadsheet'])->name('employees.export');
         Route::post('employees-change-password/{id}', [EmployeeController::class, 'changePassword'])->name('employees.change.password');
 
+
+
+        Route::get('/email-schedule', [EmailScheduleController::class, 'index'])->name('admin.email-schedule');
+        Route::post('/email-schedule', [EmailScheduleController::class, 'update'])->name('admin.email-schedule.update');
     });
+
+    Route::get('/notification-schedule', [NotificationScheduleController::class, 'index'])->name('notification-schedule');
+    Route::post('/notification-schedule', [NotificationScheduleController::class, 'update'])->name('notification-schedule.update');
+    Route::get('/guest/notification_schedule', [NotificationScheduleController::class, 'index'])->name('guest.notification_schedule');
+
         Route::post('employees-action', [EmployeeController::class, 'action'])->name('employees.action');
         Route::post('/employees/{attendanceId}/submit-explanation', [EmployeeController::class, 'submitExplanation'])->name('employees.submitExplanation');
     // Các route liên quan đến profile
