@@ -11,6 +11,7 @@ use App\Http\Controllers\SalaryLevelController;
 use App\Http\Middleware\CheckAdmin;
 use App\Mail\SendMail;
 use App\Http\Controllers\NotificationScheduleController;
+use App\Http\Controllers\SalaryController;
 
 
 /*
@@ -65,6 +66,16 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/email-schedule', [EmailScheduleController::class, 'index'])->name('admin.email-schedule');
         Route::post('/email-schedule', [EmailScheduleController::class, 'update'])->name('admin.email-schedule.update');
+
+
+
+        Route::get('salary', [SalaryController::class, 'index'])->name('salary.index');
+        Route::get('salary/create', [SalaryController::class, 'create'])->name('salary.create');
+        Route::post('salary/store', [SalaryController::class, 'store'])->name('salary.store');
+        Route::get('/admin/salary/get-attendance-days/{userId}', [SalaryController::class, 'getAttendanceDays']);
+        Route::get('/admin/salary/calculate-all', [SalaryController::class, 'calculateAll'])->name('salary.calculateAll');
+
+
     });
 
     Route::get('/notification-schedule', [NotificationScheduleController::class, 'index'])->name('notification-schedule');

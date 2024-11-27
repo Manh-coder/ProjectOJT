@@ -17,8 +17,6 @@ class UserAttendance extends Model
     'explanation',
     'status',
     'is_confirmed',
-    
-
             ];
 
     

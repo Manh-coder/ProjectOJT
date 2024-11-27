@@ -25,9 +25,10 @@
                         <x-nav-link :href="route('salary-levels.index')" :active="request()->routeIs('salary-levels.*')">
                             {{ __('Salary level') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.email-schedule')" :active="request()->routeIs('salary.*')">
+                        <x-nav-link :href="route('salary.index')" :active="request()->routeIs('salary.*')">
                             {{ __('Salary Management') }}
                         </x-nav-link>
+                        
                         <x-nav-link :href="route('admin.email-schedule')" :active="request()->routeIs('admin.*')">
                             {{ __('Time Controller') }}
                         </x-nav-link>

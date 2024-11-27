@@ -148,8 +148,7 @@
         </form>
     </div>
 
-    <a href="{{ route('employees.create') }}" class="button-sm" style="background-color: #17a2b8; color: #fff;">New
-        Employee</a>
+    <a href="{{ route('employees.create') }}" class="button-sm" style="background-color: #17a2b8; color: #fff;">New Employee</a>
     <table class="table">
         <thead>
             <tr>

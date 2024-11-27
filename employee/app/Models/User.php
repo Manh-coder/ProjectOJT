@@ -66,9 +66,17 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
+
+
     public function salaryLevel()
     {
         return $this->belongsTo(SalaryLevel::class);
+    }
+
+
+    public function attendances()
+    {
+        return $this->hasMany(UserAttendance::class, 'user_id');
     }
 }
 

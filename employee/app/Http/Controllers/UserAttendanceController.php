@@ -53,23 +53,7 @@ class UserAttendanceController extends Controller
         return view('user_attendance.create', compact('employees'));
     }
 
-    // Lưu chấm công mới
-//     public function store(Request $request)
-// {
-//     $request->validate([
-//         'user_id' => 'required|integer',
-//         'time' => 'required|date',
-//         'type' => 'required|in:in,out',
-//     ]);
 
-    //     // Thêm thông tin created_by
-//     $attendanceData = $request->all();
-//     $attendanceData['created_by'] = auth()->id();
-//     $attendanceData['updated_by'] = auth()->id();
-
-    //     UserAttendance::create($attendanceData);
-//     return redirect()->route('user-attendance.index')->with('success', 'New User-attendance successfully.');
-// }
 
 
     public function store(Request $request)
@@ -92,14 +76,6 @@ class UserAttendanceController extends Controller
         return redirect()->route('user-attendance.index')->with('success', 'User-attendance recorded successfully.');
     }
 
-
-    // Hiển thị form chỉnh sửa chấm công
-    // public function edit($id)
-    // {
-    //     $attendance = UserAttendance::findOrFail($id);
-    //     $employees = Employee::all();
-    //     return view('user_attendance.edit', compact('attendance', 'employees'));
-    // }
 
 
     public function edit($id)
@@ -160,22 +136,6 @@ class UserAttendanceController extends Controller
 
         return view('user_attendance.index', compact('attendances', 'keyword'));
     }
-
-
-
-
-    // public function show($userId)
-// {
-//     // Lấy dữ liệu "Check In" và "Check Out" của nhân viên theo user_id
-//     $checkIn = UserAttendance::where('user_id', $userId)->where('type', 'in')->orderBy('time', 'asc')->first();
-//     $checkOut = UserAttendance::where('user_id', $userId)->where('type', 'out')->orderBy('time', 'desc')->first();
-
-    //     // Trả về view với dữ liệu "Check In" và "Check Out"
-//     return view('user_attendance.details', compact('checkIn', 'checkOut'));
-// }
-
-
-
 
 
 
