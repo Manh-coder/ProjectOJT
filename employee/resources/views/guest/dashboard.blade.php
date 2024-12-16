@@ -93,6 +93,8 @@
                 </div>
             </div>
         </div>
+
+
 {{-- Form giải trình được ẩn đi --}}
 @foreach ($entries as $attendance)
     @if ($attendance->status == 'invalid')
@@ -106,6 +108,8 @@
         </div>
     @endif
 @endforeach
+
+
         {{-- Danh sách ngày công của nhân viên --}}
 <div class="mt-12">
     <h3 class="text-2xl font-semibold text-gray-700 mb-4">Attendance Records</h3>

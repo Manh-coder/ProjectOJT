@@ -78,5 +78,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserAttendance::class, 'user_id');
     }
+
+
+    public function leaveBalance()
+    {
+    return $this->hasOne(LeaveBalance::class);
+    }
+
 }
 

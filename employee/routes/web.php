@@ -12,6 +12,8 @@ use App\Http\Middleware\CheckAdmin;
 use App\Mail\SendMail;
 use App\Http\Controllers\NotificationScheduleController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\AdminLeaveController;
 
 
 /*
@@ -71,11 +73,21 @@ Route::middleware('auth')->group(function () {
 
         Route::get('salary', [SalaryController::class, 'index'])->name('salary.index');
         Route::get('salary/create', [SalaryController::class, 'create'])->name('salary.create');
-        Route::post('salary/store', [SalaryController::class, 'store'])->name('salary.store');
+        Route::post('salary/store', [SalaryController::class, 'store'])->name('salary.store');       
         Route::get('/admin/salary/get-attendance-days/{userId}', [SalaryController::class, 'getAttendanceDays']);
         Route::get('/admin/salary/calculate-all', [SalaryController::class, 'calculateAll'])->name('salary.calculateAll');
 
 
+
+        // Hiển thị danh sách tất cả đơn nghỉ phép
+    Route::get('/leave-requests', [AdminLeaveController::class, 'index'])
+    ->name('admin.leave_requests.index');
+
+// Phê duyệt hoặc từ chối đơn xin nghỉ phép
+    Route::put('/leave-requests/{id}', [AdminLeaveController::class, 'update'])
+    ->name('admin.leave_requests.update');
+
+    //Route::put('/leave-requests/{id}', [LeaveRequestController::class, 'update'])->name('leave_requests.update');
     });
 
     Route::get('/notification-schedule', [NotificationScheduleController::class, 'index'])->name('notification-schedule');
@@ -88,6 +100,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
+            // Hiển thị danh sách đơn nghỉ phép của nhân viên
+    Route::get('/leave-requests', [LeaveRequestController::class, 'index'])
+    ->name('leave_requests.index');
+
+// Hiển thị form tạo đơn nghỉ phép
+Route::get('/leave-requests/create', [LeaveRequestController::class, 'create'])
+    ->name('leave_requests.create');
+
+// Gửi đơn xin nghỉ phép
+Route::post('/leave-requests', [LeaveRequestController::class, 'store'])
+    ->name('leave_requests.store');
+
+    Route::delete('/leave-requests/{id}', [LeaveRequestController::class, 'destroy'])->name('leave_requests.destroy');
 
 });
 
