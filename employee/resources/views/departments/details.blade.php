@@ -57,9 +57,9 @@
 
     <div class="department-info"><strong>ID:</strong> {{ $department->id }}</div>
     <div class="department-info"><strong>Name:</strong> {{ $department->name }}</div>
-    <div class="department-info"><strong>Parent Department:</strong> {{ $department->parent ? $department->parent->name : 'Không có' }}</div>
-    <div class="department-info"><strong>Status:</strong> {{ $department->status == 1 ? 'Kích hoạt' : 'Vô hiệu hóa' }}</div>
-    <div class="department-info"><strong>Number of Employees:</strong> {{ $department->employeess_count }}</div>
+    <div class="department-info"><strong>Parent Department:</strong> {{ $department->parent ? $department->parent->name : 'Not available' }}</div>
+    <div class="department-info"><strong>Status:</strong> {{ $department->status == 1 ? 'Activate' : 'Disable' }}</div>
+    <div class="department-info"><strong>Number of Employees:</strong> {{ $department->users_count }}</div>
 
     <a href="{{ route('departments.index') }}" class="btn">Back to Departments List</a>
 </div>

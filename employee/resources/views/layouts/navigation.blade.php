@@ -28,7 +28,7 @@
                         <x-nav-link :href="route('salary.index')" :active="request()->routeIs('salary.*')">
                             {{ __('Salary Management') }}
                         </x-nav-link>
-                        
+
                         <x-nav-link :href="route('admin.email-schedule')" :active="request()->routeIs('admin.email-schedule*')">
                             {{ __('Time Controller') }}
                         </x-nav-link>
@@ -36,13 +36,23 @@
                         <x-nav-link :href="route('admin.leave_requests.index')" :active="request()->routeIs('admin.leave_requests*')">
                             {{ __('Leave Controller') }}
                         </x-nav-link>
+
+                        <x-nav-link :href="route('config-leave.index')" :active="request()->routeIs('config-leave*')">
+                            {{ __('Config Leave') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('report.ratio_employees_departments')" :active="request()->routeIs('report.ratio_employees_departments*')">
+                            {{ __('Report') }}
+                        </x-nav-link>
+
+                        
                     @endif
 
                     @if (auth()->user()->type == 2)
                         <x-nav-link :href="route('guest.notification_schedule')" :active="request()->routeIs('guest.')">
                             {{ __('Time Controller') }}
                         </x-nav-link>
-                        
+
                         <x-nav-link :href="route('leave_requests.index')" :active="request()->routeIs('leave_requests.')">
                             {{ __('Leave Requests') }}
                         </x-nav-link>

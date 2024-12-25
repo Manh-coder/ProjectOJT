@@ -105,7 +105,7 @@ class DepartmentController extends Controller
 
     public function show($id)
     {
-        $department = Department::withCount('employeess')->findOrFail($id);
+        $department = Department::withCount('users')->findOrFail($id);
         return view('departments.details', compact('department'));
     }
 

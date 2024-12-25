@@ -12,7 +12,15 @@ class Salary extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'valid_days', 'invalid_days', 'salary', 'month', 'processed_by', 'processed_at', 'updated_by', 'updated_at'
+        'user_id',
+        'valid_days',
+        'invalid_days',
+        'salary',
+        'month',
+        'processed_by',
+        'processed_at',
+        'updated_by',
+        'updated_at'
     ];
 
     public function user()

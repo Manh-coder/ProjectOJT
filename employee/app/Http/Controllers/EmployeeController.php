@@ -26,8 +26,8 @@ class EmployeeController extends Controller
     // Sửa phương thức index() trong EmployeeController
     public function index(Request $request)
     {
-        $keyword = $request->get('keyword');
-        $entries = UserAttendance::paginate(2);
+        $keyword   = $request->get('keyword');
+        $entries   = UserAttendance::paginate(2);
         $employees = User::query()
             ->when(
                 $keyword,
@@ -35,8 +35,8 @@ class EmployeeController extends Controller
                     ->orWhere('email', 'like', "%$keyword%")
             )
             ->typeEmployee()
-            
-            ->paginate(4); // Số lượng nhân viên hiển thị trên mỗi trang
+
+            ->paginate(3); // Số lượng nhân viên hiển thị trên mỗi trang
 
         return view('employees.index', compact('employees'));
     }
@@ -62,6 +62,8 @@ class EmployeeController extends Controller
             'password'        => ['required'],
             'salary_level_id' => ['required'],
             'position'        => ['required'],
+            'gender'          => ['required'],
+            'age'             => ['required'],
         ]);
 
         // Thêm thông tin created_by
@@ -100,7 +102,9 @@ class EmployeeController extends Controller
             'username'        => ['required', 'unique:users,username,' . $id],
             // 'password'        => ['required'],
             'salary_level_id' => ['required'],
-            'position'        => ['required']
+            'position'        => ['required'],
+            'gender'          => ['required'],
+            'age'             => ['required'],
         ]);
 
         // Cập nhật thông tin updated_by
@@ -266,7 +270,7 @@ class EmployeeController extends Controller
     public function action(Request $request)
     {
         $type = $request->input('action');
-    
+
         // Tìm bản ghi hiện tại của nhân viên (check-in/check-out)
         $entry = UserAttendance::firstOrCreate(
             [
@@ -278,16 +282,16 @@ class EmployeeController extends Controller
                 'user_id' => $request->user()->id
             ]
         );
-    
+
         // Kiểm tra nếu là check-in (ci) hoặc check-out (co)
         if ($type == 'ci') {
             // Cập nhật thời gian check-in
             $entry->update(['datetime_ci' => date('Y-m-d H:i:s')]);
-    
+
             // Điều kiện cho phép check-in sớm (ví dụ: check-in trước 08:00 vẫn hợp lệ)
-            $checkInTime = strtotime($entry->datetime_ci);
+            $checkInTime        = strtotime($entry->datetime_ci);
             $allowedCheckInTime = strtotime(date('Y-m-d 08:00:00')); // Check-in trước 08:00
-    
+
             if ($checkInTime < $allowedCheckInTime) {
                 // Check-in sớm hợp lệ, không cần yêu cầu lý do giải trình
                 $entry->status = 'valid'; // Đánh dấu là hợp lệ
@@ -298,20 +302,20 @@ class EmployeeController extends Controller
                 $entry->save();
                 return back()->withErrors(['datetime_ci' => 'Check-in time is invalid.']);
             }
-            
+
         } else if ($type == 'co') {
             // Cập nhật thời gian check-out
             $entry->update(['datetime_co' => date('Y-m-d H:i:s')]);
-    
+
             // Điều kiện cho phép check-out sau 17:00
-            $checkOutTime = strtotime($entry->datetime_co);
+            $checkOutTime        = strtotime($entry->datetime_co);
             $allowedCheckOutTime = strtotime(date('Y-m-d 17:00:00')); // Check-out sau 17:00
-    
+
             if ($checkOutTime < $allowedCheckOutTime) {
                 // Check-out trước 17:00 sẽ không hợp lệ
                 $entry->status = 'invalid';
                 $entry->save();
-    
+
                 // Hiển thị form giải trình lý do cho check-out trước 17:00
                 return back()->withErrors(['datetime_co' => 'Check-out time is invalid, please provide an explanation.']);
             } else {
@@ -320,28 +324,28 @@ class EmployeeController extends Controller
                 $entry->save();
             }
         }
-    
+
         return back()->with('success', sprintf('%s success', $type == 'ci' ? 'Check in' : 'Check out'));
     }
-    
-    
-    
 
-    
+
+
+
+
     public function submitExplanation(Request $request, $attendanceId)
     {
         // Tìm bản ghi Attendance theo ID
         $attendance = UserAttendance::findOrFail($attendanceId);
-    
+
         // Kiểm tra nếu trạng thái là 'invalid' mới xử lý lý do giải trình
         if ($attendance->status === 'invalid') {
             // Cập nhật lý do giải trình và trạng thái
             $attendance->explanation = $request->input('explanation');
-            $attendance->status = 'pending';  // Đặt trạng thái thành 'pending'
-    
+            $attendance->status      = 'pending';  // Đặt trạng thái thành 'pending'
+
             // Lưu vào cơ sở dữ liệu
             $attendance->save();
-    
+
             // Thông báo thành công
             return back()->with('success', 'Explanation submitted successfully and status updated to pending.');
         } else {
@@ -349,112 +353,112 @@ class EmployeeController extends Controller
             return back()->with('error', 'This attendance record is already valid or processed.');
         }
     }
-    
-    
-// public function adminApproveAttendance($attendanceId)
+
+
+    // public function adminApproveAttendance($attendanceId)
 // {
 //     $entry = UserAttendance::findOrFail($attendanceId);
 
-//     // Cập nhật trạng thái khi admin duyệt
+    //     // Cập nhật trạng thái khi admin duyệt
 //     if ($entry->status == 'pending') {
 //         $entry->update([
 //             'status' => 'valid', // Cập nhật trạng thái hợp lệ sau khi xác nhận
 //         ]);
-        
-//         return back()->with('success', 'Attendance has been approved and counted for working day.');
+
+    //         return back()->with('success', 'Attendance has been approved and counted for working day.');
 //     }
 
-//     return back()->with('error', 'This attendance record is not pending for approval.');
+    //     return back()->with('error', 'This attendance record is not pending for approval.');
 // }
 
-// public function confirmExplanation($id)
+    // public function confirmExplanation($id)
 // {
 //     // Tìm bản ghi attendance theo ID
 //     $attendance = UserAttendance::findOrFail($id);
 
-//     // Kiểm tra nếu status là 'invalid', thay đổi trạng thái thành 'valid'
+    //     // Kiểm tra nếu status là 'invalid', thay đổi trạng thái thành 'valid'
 //     if ($attendance->status == 'pending') {
 //         $attendance->status = 'valid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
 //         $attendance->save(); // Lưu thay đổi
 
-//         return redirect()->route('user-attendance.show', $attendance->user_id)
+    //         return redirect()->route('user-attendance.show', $attendance->user_id)
 //             ->with('success', 'Explanation confirmed successfully.');
 //     }
 
-//     // Nếu không phải trạng thái 'invalid', trả về lỗi
+    //     // Nếu không phải trạng thái 'invalid', trả về lỗi
 //     return redirect()->route('user-attendance.show', $attendance->user_id)
 //         ->with('error', 'Explanation could not be confirmed.');
 // }
 
 
 
-// public function rejectExplanation($id)
+    // public function rejectExplanation($id)
 // {
 //     // Tìm bản ghi attendance theo ID
 //     $attendance = UserAttendance::findOrFail($id);
 
-//     // Kiểm tra nếu status là 'invalid', thay đổi trạng thái thành 'valid'
+    //     // Kiểm tra nếu status là 'invalid', thay đổi trạng thái thành 'valid'
 //     if ($attendance->status == 'pending') {
 //         $attendance->status = 'invalid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
 //         $attendance->save(); // Lưu thay đổi
 
-//         return redirect()->route('user-attendance.show', $attendance->user_id)
+    //         return redirect()->route('user-attendance.show', $attendance->user_id)
 //             ->with('success', 'Explanation reject successfully.');
 //     }
 
-//     // Nếu không phải trạng thái 'invalid', trả về lỗi
+    //     // Nếu không phải trạng thái 'invalid', trả về lỗi
 //     return redirect()->route('user-attendance.show', $attendance->user_id)
 //         ->with('error', 'Explanation could not be confirmed.');
 // }
 
-    
-public function confirmExplanation($id)
-{
-    // Tìm bản ghi attendance theo ID
-    $attendance = UserAttendance::findOrFail($id);
-    $user = $attendance->user; // Lấy user liên quan đến attendance
 
-    // Kiểm tra nếu status là 'pending', thay đổi trạng thái thành 'valid'
-    if ($attendance->status == 'pending') {
-        $attendance->status = 'valid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
-        $attendance->save(); // Lưu thay đổi
+    public function confirmExplanation($id)
+    {
+        // Tìm bản ghi attendance theo ID
+        $attendance = UserAttendance::findOrFail($id);
+        $user       = $attendance->user; // Lấy user liên quan đến attendance
 
-        // Gửi email thông báo cho nhân viên
-        Mail::to($user->email)->send(new AttendanceStatusChanged($user, 'valid', null));
+        // Kiểm tra nếu status là 'pending', thay đổi trạng thái thành 'valid'
+        if ($attendance->status == 'pending') {
+            $attendance->status = 'valid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
+            $attendance->save(); // Lưu thay đổi
 
+            // Gửi email thông báo cho nhân viên
+            Mail::to($user->email)->send(new AttendanceStatusChanged($user, 'valid', null));
+
+            return redirect()->route('user-attendance.show', $attendance->user_id)
+                ->with('success', 'Explanation confirmed successfully.');
+        }
+
+        // Nếu không phải trạng thái 'pending', trả về lỗi
         return redirect()->route('user-attendance.show', $attendance->user_id)
-            ->with('success', 'Explanation confirmed successfully.');
+            ->with('error', 'Explanation could not be confirmed.');
     }
 
-    // Nếu không phải trạng thái 'pending', trả về lỗi
-    return redirect()->route('user-attendance.show', $attendance->user_id)
-        ->with('error', 'Explanation could not be confirmed.');
-}
 
 
+    public function rejectExplanation($id)
+    {
+        // Tìm bản ghi attendance theo ID
+        $attendance = UserAttendance::findOrFail($id);
+        $user       = $attendance->user; // Lấy user liên quan đến attendance
 
-public function rejectExplanation($id)
-{
-    // Tìm bản ghi attendance theo ID
-    $attendance = UserAttendance::findOrFail($id);
-    $user = $attendance->user; // Lấy user liên quan đến attendance
+        // Kiểm tra nếu status là 'pending', thay đổi trạng thái thành 'invalid'
+        if ($attendance->status == 'pending') {
+            $attendance->status = 'invalid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
+            $attendance->save(); // Lưu thay đổi
 
-    // Kiểm tra nếu status là 'pending', thay đổi trạng thái thành 'invalid'
-    if ($attendance->status == 'pending') {
-        $attendance->status = 'invalid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
-        $attendance->save(); // Lưu thay đổi
+            // Gửi email thông báo cho nhân viên
+            Mail::to($user->email)->send(new AttendanceStatusChanged($user, 'invalid', $attendance->explanation));
 
-        // Gửi email thông báo cho nhân viên
-        Mail::to($user->email)->send(new AttendanceStatusChanged($user, 'invalid', $attendance->explanation));
+            return redirect()->route('user-attendance.show', $attendance->user_id)
+                ->with('success', 'Explanation rejected successfully.');
+        }
 
+        // Nếu không phải trạng thái 'pending', trả về lỗi
         return redirect()->route('user-attendance.show', $attendance->user_id)
-            ->with('success', 'Explanation rejected successfully.');
+            ->with('error', 'Explanation could not be confirmed.');
     }
-
-    // Nếu không phải trạng thái 'pending', trả về lỗi
-    return redirect()->route('user-attendance.show', $attendance->user_id)
-        ->with('error', 'Explanation could not be confirmed.');
-}
 
 
 

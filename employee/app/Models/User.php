@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -29,7 +30,9 @@ class User extends Authenticatable
         'position',
         'salary_level_id',
         'phone_number',
-        'position'
+        'position',
+        'age',
+        'gender'
     ];
 
     /**
@@ -50,7 +53,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password'          => 'hashed',
+        'work_year'         => 'int'
     ];
+
+    protected $appends = ['work_year', 'age'];
 
     const TYPE_OPTIONS = [
         'admin'    => 1,
@@ -72,6 +78,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(SalaryLevel::class);
     }
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class);
+    }
 
 
     public function attendances()
@@ -82,7 +92,18 @@ class User extends Authenticatable
 
     public function leaveBalance()
     {
-    return $this->hasOne(LeaveBalance::class);
+        return $this->hasOne(LeaveBalance::class);
+    }
+
+    public function getWorkYearAttribute()
+    {
+        $createdAt = $this->created_at;
+        $now       = Carbon::now();
+        if ($createdAt) {
+            $diffYear = $now->diffInYears($createdAt);
+            return $diffYear;
+        }
+        return 0;
     }
 
 }

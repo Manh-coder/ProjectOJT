@@ -16,6 +16,9 @@ class NotificationScheduleController extends Controller
         );
 
         return view('guest.notification_schedule', compact('schedule'));
+
+        
+
     }
 
     public function update(Request $request)

@@ -14,7 +14,8 @@ use App\Http\Controllers\NotificationScheduleController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\AdminLeaveController;
-
+use App\Http\Controllers\ConfigLeaveController;
+use App\Http\Controllers\Report\RatioEmployeeDepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +29,7 @@ use App\Http\Controllers\AdminLeaveController;
 
 // Route cho trang chủ
 Route::get('/', function () {
-   
+
     return view('welcome');
 });
 
@@ -46,16 +47,16 @@ Route::middleware('auth')->group(function () {
         // Employee routes
         Route::resource('salary-levels', SalaryLevelController::class);
         Route::resource('employees', EmployeeController::class);
-        
+
         Route::resource('departments', DepartmentController::class);
-        
+
         Route::resource('user-attendance', UserAttendanceController::class);
-        
+
         Route::post('/admin/attendance/{id}/confirm-explanation', [EmployeeController::class, 'confirmExplanation'])
-        ->name('admin.attendance.confirmExplanation');
+            ->name('admin.attendance.confirmExplanation');
 
         Route::post('/admin/attendance/{id}/reject-explanation', [EmployeeController::class, 'rejectExplanation'])
-        ->name('admin.attendance.reject');
+            ->name('admin.attendance.reject');
 
 
 
@@ -73,47 +74,53 @@ Route::middleware('auth')->group(function () {
 
         Route::get('salary', [SalaryController::class, 'index'])->name('salary.index');
         Route::get('salary/create', [SalaryController::class, 'create'])->name('salary.create');
-        Route::post('salary/store', [SalaryController::class, 'store'])->name('salary.store');       
-        Route::get('/admin/salary/get-attendance-days/{userId}', [SalaryController::class, 'getAttendanceDays']);
-        Route::get('/admin/salary/calculate-all', [SalaryController::class, 'calculateAll'])->name('salary.calculateAll');
+        Route::post('salary/store', [SalaryController::class, 'store'])->name('salary.store');
+        Route::get('salary/get-attendance-days/{userId}', [SalaryController::class, 'getAttendanceDays']);
+        Route::post('/admin/salary/calculate-all', [SalaryController::class, 'calculateAll'])->name('salary.calculateAll');
+
 
 
 
         // Hiển thị danh sách tất cả đơn nghỉ phép
-    Route::get('/leave-requests', [AdminLeaveController::class, 'index'])
-    ->name('admin.leave_requests.index');
+        Route::get('/leave-requests', [AdminLeaveController::class, 'index'])->name('admin.leave_requests.index');
 
-// Phê duyệt hoặc từ chối đơn xin nghỉ phép
-    Route::put('/leave-requests/{id}', [AdminLeaveController::class, 'update'])
-    ->name('admin.leave_requests.update');
+        // Phê duyệt hoặc từ chối đơn xin nghỉ phép
+        Route::put('/leave-requests/{id}', [AdminLeaveController::class, 'update'])->name('admin.leave_requests.update');
 
-    //Route::put('/leave-requests/{id}', [LeaveRequestController::class, 'update'])->name('leave_requests.update');
+        //Route::put('/leave-requests/{id}', [LeaveRequestController::class, 'update'])->name('leave_requests.update');
+
+        Route::resource('config-leave', ConfigLeaveController::class);
+        // Báo cáo
+        Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
+            Route::get('index', [RatioEmployeeDepartmentController::class, 'index'])->name('ratio_employees_departments');
+
+        });
     });
 
     Route::get('/notification-schedule', [NotificationScheduleController::class, 'index'])->name('notification-schedule');
     Route::post('/notification-schedule', [NotificationScheduleController::class, 'update'])->name('notification-schedule.update');
     Route::get('/guest/notification_schedule', [NotificationScheduleController::class, 'index'])->name('guest.notification_schedule');
 
-        Route::post('employees-action', [EmployeeController::class, 'action'])->name('employees.action');
-        Route::post('/employees/{attendanceId}/submit-explanation', [EmployeeController::class, 'submitExplanation'])->name('employees.submitExplanation');
+    Route::post('employees-action', [EmployeeController::class, 'action'])->name('employees.action');
+    Route::post('/employees/{attendanceId}/submit-explanation', [EmployeeController::class, 'submitExplanation'])->name('employees.submitExplanation');
     // Các route liên quan đến profile
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
 
-            // Hiển thị danh sách đơn nghỉ phép của nhân viên
+    // Hiển thị danh sách đơn nghỉ phép của nhân viên
     Route::get('/leave-requests', [LeaveRequestController::class, 'index'])
-    ->name('leave_requests.index');
+        ->name('leave_requests.index');
 
-// Hiển thị form tạo đơn nghỉ phép
-Route::get('/leave-requests/create', [LeaveRequestController::class, 'create'])
-    ->name('leave_requests.create');
+    // Hiển thị form tạo đơn nghỉ phép
+    Route::get('/leave-requests/create', [LeaveRequestController::class, 'create'])
+        ->name('leave_requests.create');
 
-// Gửi đơn xin nghỉ phép
-Route::post('/leave-requests', [LeaveRequestController::class, 'store'])
-    ->name('leave_requests.store');
+    // Gửi đơn xin nghỉ phép
+    Route::post('/leave-requests', [LeaveRequestController::class, 'store'])
+        ->name('leave_requests.store');
 
     Route::delete('/leave-requests/{id}', [LeaveRequestController::class, 'destroy'])->name('leave_requests.destroy');
 

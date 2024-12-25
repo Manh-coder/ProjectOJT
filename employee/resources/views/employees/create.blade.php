@@ -37,8 +37,19 @@
                 <input type="tel" name="phone_number" id="phone" class="form-control" required>
             </div>
             <div class="form-group">
+                <label for="age" class="form-label">Age:</label>
+                <input type="number" name="age" id="age" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="gender" class="form-label">Gender:</label>
+                <select name="gender" id="gender" class="form-control p-1">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="department_id" class="form-label">Department:</label>
-                <select name="department_id" id="department_id" class="form-control">
+                <select name="department_id" id="department_id" class="form-control p-1">
                     @foreach ($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->name }}</option>
                     @endforeach
@@ -50,7 +61,7 @@
             </div>
             <div class="form-group">
                 <label for="salary_level_id" class="form-label">Satary level:</label>
-                <select name="salary_level_id" id="salary_level_id" class="form-control">
+                <select name="salary_level_id" id="salary_level_id" class="form-control p-1">
                     @foreach ($levels as $department)
                         <option value="{{ $department->id }}">{{ $department->level }}</option>
                     @endforeach

@@ -19,11 +19,13 @@
             @method('PUT')
             <div class="form-group">
                 <label for="name" class="form-label">Name:</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ $employee->name }}" required>
+                <input type="text" name="name" id="name" class="form-control" value="{{ $employee->name }}"
+                    required>
             </div>
             <div class="form-group">
                 <label for="username" class="form-label">Username:</label>
-                <input type="text" name="username" id="username" class="form-control" value="{{ $employee->username }}" required>
+                <input type="text" name="username" id="username" class="form-control" value="{{ $employee->username }}"
+                    required>
             </div>
             <div class="form-group">
                 <label for="password" class="form-label">New Password:</label>
@@ -31,27 +33,43 @@
             </div>
             <div class="form-group">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" name="email" id="email" class="form-control" value="{{ $employee->email }}" required>
+                <input type="email" name="email" id="email" class="form-control" value="{{ $employee->email }}"
+                    required>
             </div>
             <div class="form-group">
                 <label for="phone_number" class="form-label">Phone:</label>
-                <input type="tel" name="phone_number" id="phone_number" class="form-control" value="{{ $employee->phone_number }}" required>
+                <input type="tel" name="phone_number" id="phone_number" class="form-control"
+                    value="{{ $employee->phone_number }}" required>
+            </div>
+            <div class="form-group">
+                <label for="age" class="form-label">Age:</label>
+                <input type="number" name="age" id="age" class="form-control" value="{{ $employee->age }}"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="gender" class="form-label">Gender:</label>
+                <select name="gender" id="gender" class="form-control p-1">
+                    <option value="male" {{ $employee->gender == 'male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ $employee->gender == 'female' ? 'selected' : '' }}>Female</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="department_id" class="form-label">Department:</label>
-                <select name="department_id" id="department_id" class="form-control">
+                <select name="department_id" id="department_id" class="form-control p-1">
                     @foreach ($departments as $department)
-                        <option value="{{ $department->id }}" @if ($employee->department_id == $department->id) selected @endif>{{ $department->name }}</option>
+                        <option value="{{ $department->id }}" @if ($employee->department_id == $department->id) selected @endif>
+                            {{ $department->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="form-group">
                 <label for="position" class="form-label">Position:</label>
-                <input type="text" name="position" id="position" class="form-control" value="{{ $employee->position }}">
+                <input type="text" name="position" id="position" class="form-control"
+                    value="{{ $employee->position }}">
             </div>
             <div class="form-group">
                 <label for="salary_level_id" class="form-label">Satary level:</label>
-                <select name="salary_level_id" id="salary_level_id" class="form-control">
+                <select name="salary_level_id" id="salary_level_id" class="form-control p-1">
                     @foreach ($levels as $department)
                         <option value="{{ $department->id }}">{{ $department->level }}</option>
                     @endforeach
