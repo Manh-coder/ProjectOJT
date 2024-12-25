@@ -85,7 +85,7 @@
                                 <div class="modal-dialog modal-lg" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Lương của nhân viên
+                                            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 20px; font-weight: bold; color: #333; text-align: center; padding: 10px; background-color: #f4f4f4; border: 1px solid #ccc; border-radius: 8px; width: fit-content; margin: 20px auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">Lương của nhân viên:
                                                 {{ $user->name }}</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
@@ -120,7 +120,7 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                            {{-- <button type="button" class="btn btn-primary">Save changes</button> --}}
                                         </div>
                                     </div>
                                 </div>

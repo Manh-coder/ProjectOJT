@@ -11,9 +11,15 @@
                 Create Leave Request
             </a>
         </div>
-        <div>
-            <h6>Tổng số phép <span class="badge badge-secondary">{{ $leaveBalnace->total_leave_days }}</span></h6>
-            <h6>Tổng số phép đã sử dụng <span class="badge badge-secondary">{{ $leaveBalnace->used_leave_days }}</span></h6>
+        <div style="padding: 10px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 300px; margin: 20px auto; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h6 style="font-size: 14px; font-weight: bold; margin: 0; color: #333;">Total vacation days:</h6>
+                <span style="padding: 4px 10px; font-size: 12px; font-weight: 500; border-radius: 10px; color: #fff; background-color: #007bff;">{{ $leaveBalnace->total_leave_days }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h6 style="font-size: 14px; font-weight: bold; margin: 0; color: #333;">Days of leave used:</h6>
+                <span style="padding: 4px 10px; font-size: 12px; font-weight: 500; border-radius: 10px; color: #fff; background-color: #28a745;">{{ $leaveBalnace->used_leave_days }}</span>
+            </div>
         </div>
 
         <div class="mt-6">

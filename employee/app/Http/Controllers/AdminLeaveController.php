@@ -7,6 +7,9 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveBalance;
 use Illuminate\Http\Request;
 
+use App\Mail\LeaveRequestStatusUpdated;
+use Illuminate\Support\Facades\Mail;
+
 class AdminLeaveController extends Controller
 {
     // Hiển thị danh sách đơn xin nghỉ phép
@@ -32,6 +35,11 @@ class AdminLeaveController extends Controller
         } else {
             $leaveRequest->update(['status' => 'rejected']);
         }
+
+
+        // Gửi email thông báo
+    Mail::to($leaveRequest->user->email)->send(new LeaveRequestStatusUpdated($leaveRequest));
+
 
         return redirect()->back()->with('success', 'Leave request updated successfully!');
     }
