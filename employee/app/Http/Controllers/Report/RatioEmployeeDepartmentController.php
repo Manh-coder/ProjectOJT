@@ -22,7 +22,6 @@ class RatioEmployeeDepartmentController extends Controller
         // Biểu đồ thống kê lương thực nhận của các nhân viên
         $salaryReport = $this->getSalaryReport();
         return view('report.ratio-employee-department', compact('ratio', 'ageAndGender', 'gender', 'workdayReport', 'salaryReport'));
-
     }
     private function getSalaryReport()
     {
@@ -106,7 +105,6 @@ class RatioEmployeeDepartmentController extends Controller
                     responsive: true,
                     maintainAspectRatio: false
                 }");
-
     }
     private function getWorkdayReport()
     {
@@ -201,7 +199,6 @@ class RatioEmployeeDepartmentController extends Controller
                     responsive: false,
                     maintainAspectRatio: false
                 }");
-
     }
     private function getGenderReport()
     {
@@ -304,27 +301,29 @@ class RatioEmployeeDepartmentController extends Controller
 
         $lables          = [];
         $dataNumber      = [];
+        $dataNumber2     = [];
+        $dataNumber3     = [];
         $backgroundColor = [];
 
-
-        $departments = Department::withCount('users')
+        $departments = Department::withCount([
+                'users AS male_users'   => fn($q) => $q->where('type', 2)->where('gender', 'male'),
+                'users AS female_users' => fn($q) => $q->where('type', 2)->where('gender', 'female'),
+            ])
+            ->withAvg('users', 'age')
             ->when(request()->query('gender_and_age'), function ($q) {
                 $q->where('created_at', '>=', request()->query('gender_and_age'));
             })
             ->get();
-        $users       = User::where('type', 2)
-            ->when(request()->query('gender_and_age'), function ($q) {
-                $q->where('created_at', '>=', request()->query('gender_and_age'));
-            })
-            ->get();
+        // $users       = User::where('type', 2)
+        //     ->when(request()->query('gender_and_age'), function ($q) {
+        //         $q->where('created_at', '>=', request()->query('gender_and_age'));
+        //     })
+        //     ->get();
         foreach ($departments as $department) {
-            $lables[]          = $department->name;
-            $backgroundColor[] = $this->generateRandomColor();
-
-
-            $countUserByDepartment = $department->users_count;
-            $department->ratio     = ($countUserByDepartment / $users->count()) * 100;
-            $dataNumber[]          = $department->ratio;
+            $lables[]      = $department->name;
+            $dataNumber[]  = $department->male_users;
+            $dataNumber2[] = $department->female_users;
+            $dataNumber3[] = (int) $department->users_avg_age;
         }
 
 
@@ -338,21 +337,21 @@ class RatioEmployeeDepartmentController extends Controller
                     'label'           => 'Age',
                     "backgroundColor" => 'red',
                     "borderColor"     => "rgba(38, 185, 154, 0.7)",
-                    "data"            => [65, 59, 80, 81, 56, 55, 40],
+                    "data"            => $dataNumber3,
                     "fill"            => FALSE,
                 ],
                 [
                     'label'           => 'Male',
                     "backgroundColor" => 'pink',
                     "borderColor"     => "rgba(38, 185, 154, 0.7)",
-                    "data"            => [15, 19, 10, 11, 56, 55, 40],
+                    "data"            => $dataNumber,
                     "fill"            => FALSE,
                 ],
                 [
                     'label'           => 'FMale',
                     "backgroundColor" => 'yellow',
                     "borderColor"     => "rgba(38, 185, 154, 0.7)",
-                    "data"            => [15, 19, 10, 11, 56, 55, 40],
+                    "data"            => $dataNumber2,
                     "fill"            => FALSE,
                 ]
             ])

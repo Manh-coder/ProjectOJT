@@ -51,15 +51,14 @@
                         <form action="{{ route('employees.action') }}" method="post" class="form-inline float-right">
                             @csrf
                             <input type="text" value="ci" name="action" style="display: none">
-                            <button 
-                                type="{{ !$entry?->datetime_ci ? 'submit' : 'button' }}" 
-                                class="btn btn-primary btn-sm p-1 {{ $entry?->datetime_ci ? 'opacity-75' : '' }}" 
+                            <button type="{{ !$entry?->datetime_ci ? 'submit' : 'button' }}"
+                                class="btn btn-primary btn-sm p-1 {{ $entry?->datetime_ci ? 'opacity-75' : '' }}"
                                 {{ $entry?->datetime_ci ? 'disabled' : '' }}>
                                 Checkin
                             </button>
                         </form>
                     </div>
-                    
+
                     {{-- <div class="col-md-2">
                         <form action="{{ route('employees.action') }}" method="post" class="form-inline float-right">
                             @csrf
@@ -72,16 +71,16 @@
                         <form action="{{ route('employees.action') }}" method="post" class="form-inline float-right">
                             @csrf
                             <input type="text" value="co" name="action" style="display: none">
-                            <button 
-                                type="{{ !empty($entry) && !$entry->datetime_co && !empty($entry->datetime_ci) && $entry->status != 'invalid' ? 'submit' : 'button' }}" 
-                                class="btn btn-primary btn-sm p-1 {{ !empty($entry) && ($entry->datetime_co || $entry->status == 'invalid') ? 'opacity-75' : '' }}" 
+                            <button
+                                type="{{ !empty($entry) && !$entry->datetime_co && !empty($entry->datetime_ci) && $entry->status != 'invalid' ? 'submit' : 'button' }}"
+                                class="btn btn-primary btn-sm p-1 {{ !empty($entry) && ($entry->datetime_co || $entry->status == 'invalid') ? 'opacity-75' : '' }}"
                                 {{ empty($entry) || $entry->status == 'invalid' || $entry->status == 'pending' ? 'disabled' : '' }}>
                                 Checkout
                             </button>
                         </form>
                     </div>
-                    
-                    
+
+
                 </div>
                 <div class="row">
                     <div class="col-md-12 mt-6 bg-white text-gray-800 p-4 rounded-lg shadow">
@@ -95,220 +94,285 @@
         </div>
 
 
-{{-- Form giải trình được ẩn đi --}}
-@foreach ($entries as $attendance)
-    @if ($attendance->status == 'invalid')
-        <div id="explanationForm-{{ $attendance->id }}" class="alert alert-warning mt-3" style="display: none;">
-            <strong>{{ auth()->user()->name }}</strong>, your check-in or check-out is invalid. Please provide an explanation.
-            <form action="{{ route('employees.submitExplanation', $attendance->id) }}" method="POST">
-                @csrf
-                <textarea name="explanation" placeholder="Provide your explanation here..." class="form-control" required></textarea>
-                <button type="submit" class="btn btn-warning mt-2">Submit Explanation</button>
-            </form>
-        </div>
-    @endif
-@endforeach
+        {{-- Form giải trình được ẩn đi --}}
+        @foreach ($entries as $attendance)
+            @if ($attendance->status == 'invalid')
+                <div id="explanationForm-{{ $attendance->id }}" class="alert alert-warning mt-3"
+                    style="display: none;">
+                    <strong>{{ auth()->user()->name }}</strong>, your check-in or check-out is invalid. Please provide
+                    an explanation.
+                    <form action="{{ route('employees.submitExplanation', $attendance->id) }}" method="POST">
+                        @csrf
+                        <textarea name="explanation" placeholder="Provide your explanation here..." class="form-control" required></textarea>
+                        <button type="submit" class="btn btn-warning mt-2">Submit Explanation</button>
+                    </form>
+                </div>
+            @endif
+        @endforeach
 
 
         {{-- Danh sách ngày công của nhân viên --}}
-<div class="mt-12">
-    <h3 class="text-2xl font-semibold text-gray-700 mb-4">Attendance Records</h3>
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Date
-                    </th>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Check in time
-                    </th>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Check out time
-                    </th>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Time of work
-                    </th>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Status
-                    </th>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Explanation
-                    </th>
-                    <th class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach ($entries as $key => $attendance)
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-4 px-6 text-sm font-medium text-gray-900">{{ date('Y-m-d', strtotime($attendance->datetime_ci)) }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-500">{{ date('H:i:s', strtotime($attendance->datetime_ci)) }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-500">{{ date('H:i:s', strtotime($attendance->datetime_co)) }}</td>
-                        <td class="py-4 px-6 text-sm text-gray-500">
-                            @if ($attendance->datetime_co)
-                                @php
-                                    $firstCheckInTime = \Carbon\Carbon::parse($attendance->datetime_ci);
-                                    $lastCheckOutTime = \Carbon\Carbon::parse($attendance->datetime_co);
-                                    $total = $lastCheckOutTime->diff($firstCheckInTime);
-                                    $format = $total->format('%H:%I:%s');
-                                @endphp
-                                {{ $format }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="py-4 px-6 text-sm text-gray-500">
-                            {{-- Hiển thị trạng thái --}}
-                            @if ($attendance->status == 'pending')
-                                <span class="text-yellow-600 font-bold" style="color: rgb(255, 204, 0) !important;">Pending</span>
-                            @elseif ($attendance->status == 'invalid')
-                                <span class="text-red-500 font-bold" style="color: red !important;">Invalid</span>
-                            @elseif ($attendance->status == 'valid')
-                                <span class="text-green-500 font-bold" style="color: green !important;">Valid</span>
-                            @else
-                                <span class="text-gray-500">N/A</span>
-                            @endif
-                        </td>
+        <div class="mt-12">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">Attendance Records</h3>
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Date
+                            </th>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Check in time
+                            </th>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Check out time
+                            </th>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Time of work
+                            </th>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Explanation
+                            </th>
+                            <th
+                                class="py-3 px-6 bg-blue-100 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($entries as $key => $attendance)
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 text-sm font-medium text-gray-900">
+                                    {{ date('Y-m-d', strtotime($attendance->datetime_ci)) }}</td>
+                                <td class="py-4 px-6 text-sm text-gray-500">
+                                    {{ date('H:i:s', strtotime($attendance->datetime_ci)) }}</td>
+                                <td class="py-4 px-6 text-sm text-gray-500">
+                                    {{ date('H:i:s', strtotime($attendance->datetime_co)) }}</td>
+                                <td class="py-4 px-6 text-sm text-gray-500">
+                                    @if ($attendance->datetime_co)
+                                        @php
+                                            $firstCheckInTime = \Carbon\Carbon::parse($attendance->datetime_ci);
+                                            $lastCheckOutTime = \Carbon\Carbon::parse($attendance->datetime_co);
+                                            $total = $lastCheckOutTime->diff($firstCheckInTime);
+                                            $format = $total->format('%H:%I:%s');
+                                        @endphp
+                                        {{ $format }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="py-4 px-6 text-sm text-gray-500">
+                                    {{-- Hiển thị trạng thái --}}
+                                    @if ($attendance->status == 'pending')
+                                        <span class="text-yellow-600 font-bold"
+                                            style="color: rgb(255, 204, 0) !important;">Pending</span>
+                                    @elseif ($attendance->status == 'invalid')
+                                        <span class="text-red-500 font-bold"
+                                            style="color: red !important;">Invalid</span>
+                                    @elseif ($attendance->status == 'valid')
+                                        <span class="text-green-500 font-bold"
+                                            style="color: green !important;">Valid</span>
+                                    @else
+                                        <span class="text-gray-500">N/A</span>
+                                    @endif
+                                </td>
 
-                        <td>
-                            @if ($attendance->explanation)
-                                <span>{{ $attendance->explanation }}</span>
-                            @else
-                                <span>-</span>
-                            @endif
-                        </td>
+                                <td>
+                                    @if ($attendance->explanation)
+                                        <span>{{ $attendance->explanation }}</span>
+                                    @else
+                                        <span>-</span>
+                                    @endif
+                                </td>
 
-                        {{-- Nút để mở form giải trình --}}
-                        <td>
-                            @if ($attendance->status == 'invalid')
-                                <button type="button" class="btn btn-warning" id="toggleExplanationForm-{{ $attendance->id }}">Provide Explanation</button>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+                                {{-- Nút để mở form giải trình --}}
+                                <td>
+                                    @if ($attendance->status == 'invalid')
+                                        {{-- <button type="button" class="btn btn-warning"
+                                            id="toggleExplanationForm-{{ $attendance->id }}">Provide
+                                            Explanation</button> --}}
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModal{{ $attendance->id }}">
+                                            Provide Explanation
+                                        </button>
 
-    {{-- Phân trang đẹp hơn với Bootstrap --}}
-    <div class="mt-4">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                {{-- Nút Previous --}}
-                <li class="page-item {{ $entries->onFirstPage() ? 'disabled' : '' }}">
-                    <a class="page-link" href="{{ $entries->previousPageUrl() }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal{{ $attendance->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <form
+                                                        action="{{ route('employees.submitExplanation', $attendance->id) }}"
+                                                        method="POST">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                                <strong>{{ auth()->user()->name }}</strong>, your
+                                                                check-in
+                                                                or check-out is invalid. Please provide
+                                                                an explanation.
+                                                            </h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div id="explanationForm-{{ $attendance->id }}"
+                                                                class="alert alert-warning mt-3">
 
-                {{-- Các trang giữa --}}
-                @foreach ($entries->getUrlRange(1, $entries->lastPage()) as $page => $url)
-                    <li class="page-item {{ $page == $entries->currentPage() ? 'active' : '' }}">
-                        <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                    </li>
-                @endforeach
+                                                                @csrf
+                                                                <textarea name="explanation" placeholder="Provide your explanation here..." class="form-control" required></textarea>
 
-                {{-- Nút Next --}}
-                <li class="page-item {{ $entries->hasMorePages() ? '' : 'disabled' }}">
-                    <a class="page-link" href="{{ $entries->nextPageUrl() }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-warning mt-2">Submit
+                                                                Explanation</button>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Phân trang đẹp hơn với Bootstrap --}}
+            <div class="mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {{-- Nút Previous --}}
+                        <li class="page-item {{ $entries->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $entries->previousPageUrl() }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        {{-- Các trang giữa --}}
+                        @foreach ($entries->getUrlRange(1, $entries->lastPage()) as $page => $url)
+                            <li class="page-item {{ $page == $entries->currentPage() ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endforeach
+
+                        {{-- Nút Next --}}
+                        <li class="page-item {{ $entries->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link" href="{{ $entries->nextPageUrl() }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
 
 
-{{-- Script để toggle form giải trình --}}
-<script>
-    document.querySelectorAll('[id^="toggleExplanationForm-"]').forEach(button => {
-        button.addEventListener('click', function () {
-            const attendanceId = this.id.split('-')[1]; // Lấy ID bản ghi
-            const explanationForm = document.getElementById('explanationForm-' + attendanceId);
-            if (explanationForm.style.display === 'none') {
-                explanationForm.style.display = 'block';  // Hiện form khi click
-            } else {
-                explanationForm.style.display = 'none';  // Ẩn form khi click lại
+        {{-- Script để toggle form giải trình --}}
+        <script>
+            document.querySelectorAll('[id^="toggleExplanationForm-"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const attendanceId = this.id.split('-')[1]; // Lấy ID bản ghi
+                    const explanationForm = document.getElementById('explanationForm-' + attendanceId);
+                    if (explanationForm.style.display === 'none') {
+                        explanationForm.style.display = 'block'; // Hiện form khi click
+                    } else {
+                        explanationForm.style.display = 'none'; // Ẩn form khi click lại
+                    }
+                });
+            });
+        </script>
+
+
+
+        <style>
+            .btn:disabled,
+            .btn[disabled] {
+                background-color: #d6d6d6;
+                color: #a0a0a0;
+                cursor: not-allowed;
             }
-        });
-    });
-</script>
 
+            .btn:disabled:hover {
+                background-color: #d6d6d6;
+                /* Màu mờ khi hover */
+            }
 
-  
-    <style>
-.btn:disabled, .btn[disabled] {
-    background-color: #d6d6d6;   
-    color: #a0a0a0;              
-    cursor: not-allowed;          
-}
+            body {
+                background-image: url('/path/to/your/background-image.jpg');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+                background-repeat: no-repeat;
+            }
 
-.btn:disabled:hover {
-    background-color: #d6d6d6;  /* Màu mờ khi hover */
-}
+            .bg-blue-600 {
+                background-color: #1E40AF;
+                /* Màu xanh đậm */
+            }
 
-        body {
-            background-image: url('/path/to/your/background-image.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-        }
+            .bg-green-600 {
+                background-color: #059669;
+                /* Màu xanh lá cây */
+            }
 
-        .bg-blue-600 {
-            background-color: #1E40AF;
-            /* Màu xanh đậm */
-        }
+            .bg-blue-100 {
+                background-color: #DBEAFE;
+                /* Màu xanh nhạt cho bảng */
+            }
 
-        .bg-green-600 {
-            background-color: #059669;
-            /* Màu xanh lá cây */
-        }
+            .shadow-md {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
 
-        .bg-blue-100 {
-            background-color: #DBEAFE;
-            /* Màu xanh nhạt cho bảng */
-        }
+            .alert-success {
+                background-color: #28a745;
+                color: white;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 5px;
+            }
 
-        .shadow-md {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+            .alert-warning {
+                background-color: #ffc107;
+                color: white;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 5px;
+            }
 
-        .alert-success {
-            background-color: #28a745;
-            color: white;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
+            .form-control {
+                padding: 10px;
+                font-size: 1rem;
+                width: 100%;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+            }
 
-        .alert-warning {
-            background-color: #ffc107;
-            color: white;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .form-control {
-            padding: 10px;
-            font-size: 1rem;
-            width: 100%;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+            .btn {
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: white;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+            }
+        </style>
 
 </x-guest-layout>

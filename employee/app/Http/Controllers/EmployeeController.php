@@ -10,6 +10,7 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Imports\EmployeesImport;
 use App\Exports\EmployeesExport;
+use App\Models\LeaveBalance;
 use App\Models\SalaryLevel;
 use App\Models\User;
 use App\Models\UserAttendance;
@@ -36,7 +37,7 @@ class EmployeeController extends Controller
             )
             ->typeEmployee()
 
-            ->paginate(3); // Số lượng nhân viên hiển thị trên mỗi trang
+            ->paginate(4); // Số lượng nhân viên hiển thị trên mỗi trang
 
         return view('employees.index', compact('employees'));
     }
@@ -71,9 +72,13 @@ class EmployeeController extends Controller
         $employeeData['updated_by'] = auth()->id();
         $employeeData['password']   = Hash::make($request->input('password'));
 
-        User::create([
+        $entry = User::create([
             ...$employeeData,
             'type' => User::TYPE_OPTIONS['employee']
+        ]);
+        LeaveBalance::create([
+            'user_id'          => $entry->id,
+            'total_leave_days' => 8
         ]);
         return redirect()->route('employees.index')->with('success', 'New Employee created successfully.');
     }
@@ -176,7 +181,7 @@ class EmployeeController extends Controller
             Excel::import(new EmployeesImport, $request->file('file'));
             return redirect()->route('employees.index')->with('success', 'Employees imported successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to import employees. ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to import employees. There is duplicate data');
         }
     }
 
@@ -213,7 +218,8 @@ class EmployeeController extends Controller
             $sheet->setCellValue('D1', 'Phone');
             $sheet->setCellValue('E1', 'Department ID');
             $sheet->setCellValue('F1', 'Position');
-            $sheet->setCellValue('G1', 'Status');
+            $sheet->setCellValue('G1', 'Age');
+            $sheet->setCellValue('H1', 'Gender');
             // 
             $row = 2;
 
@@ -224,7 +230,8 @@ class EmployeeController extends Controller
                 $sheet->setCellValue('D' . $row, $employee->phone);
                 $sheet->setCellValue('E' . $row, $employee->department_id);
                 $sheet->setCellValue('F' . $row, $employee->position);
-                $sheet->setCellValue('G' . $row, $employee->status);
+                $sheet->setCellValue('G' . $row, $employee->age);
+                $sheet->setCellValue('H' . $row, $employee->gender);
                 $row++;
             }
 
@@ -243,29 +250,6 @@ class EmployeeController extends Controller
             'Cache-Control'       => 'max-age=0',
         ]);
     }
-
-    // public function action(Request $request)
-    // {
-    //     $type = $request->input('action');
-
-    //     $entry = UserAttendance::firstOrCreate(
-    //         [
-    //             'date'    => date('Y-m-d'),
-    //             'user_id' => $request->user()->id
-    //         ],
-    //         [
-    //             'date'    => date('Y-m-d'),
-    //             'user_id' => $request->user()->id
-    //         ]
-    //     );
-    //     if ($type == 'ci') {
-    //         $entry->update(['datetime_ci' => date('Y-m-d H:i:s')]);
-    //     } else {
-    //         $entry->update(['datetime_co' => date('Y-m-d H:i:s')]);
-    //     }
-    //     return back()->with('success', sprintf('%s success', $type == 'ci' ? 'Check in' : 'Check out'));
-    // }
-
 
     public function action(Request $request)
     {
@@ -354,62 +338,6 @@ class EmployeeController extends Controller
         }
     }
 
-
-    // public function adminApproveAttendance($attendanceId)
-// {
-//     $entry = UserAttendance::findOrFail($attendanceId);
-
-    //     // Cập nhật trạng thái khi admin duyệt
-//     if ($entry->status == 'pending') {
-//         $entry->update([
-//             'status' => 'valid', // Cập nhật trạng thái hợp lệ sau khi xác nhận
-//         ]);
-
-    //         return back()->with('success', 'Attendance has been approved and counted for working day.');
-//     }
-
-    //     return back()->with('error', 'This attendance record is not pending for approval.');
-// }
-
-    // public function confirmExplanation($id)
-// {
-//     // Tìm bản ghi attendance theo ID
-//     $attendance = UserAttendance::findOrFail($id);
-
-    //     // Kiểm tra nếu status là 'invalid', thay đổi trạng thái thành 'valid'
-//     if ($attendance->status == 'pending') {
-//         $attendance->status = 'valid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
-//         $attendance->save(); // Lưu thay đổi
-
-    //         return redirect()->route('user-attendance.show', $attendance->user_id)
-//             ->with('success', 'Explanation confirmed successfully.');
-//     }
-
-    //     // Nếu không phải trạng thái 'invalid', trả về lỗi
-//     return redirect()->route('user-attendance.show', $attendance->user_id)
-//         ->with('error', 'Explanation could not be confirmed.');
-// }
-
-
-
-    // public function rejectExplanation($id)
-// {
-//     // Tìm bản ghi attendance theo ID
-//     $attendance = UserAttendance::findOrFail($id);
-
-    //     // Kiểm tra nếu status là 'invalid', thay đổi trạng thái thành 'valid'
-//     if ($attendance->status == 'pending') {
-//         $attendance->status = 'invalid'; // Hoặc có thể là trạng thái khác tùy yêu cầu
-//         $attendance->save(); // Lưu thay đổi
-
-    //         return redirect()->route('user-attendance.show', $attendance->user_id)
-//             ->with('success', 'Explanation reject successfully.');
-//     }
-
-    //     // Nếu không phải trạng thái 'invalid', trả về lỗi
-//     return redirect()->route('user-attendance.show', $attendance->user_id)
-//         ->with('error', 'Explanation could not be confirmed.');
-// }
 
 
     public function confirmExplanation($id)
